@@ -6,6 +6,12 @@ public class Utils {
                     * ( x - segment_p1.getX()) / (segment_p2.getX() - segment_p1.getX());
     }
     public static Point intersection(Point s1p1, Point s1p2, Point s2p1, Point s2p2) {
+        if(s1p1.compareTo(s1p2) > 0) {
+            return intersection(s1p2, s1p1, s2p1, s2p2);
+        }
+        if(s2p1.compareTo(s2p2) > 0) {
+            return intersection(s1p1, s1p2, s2p2, s2p1);
+        }
         double x, y, x1, x2, x3, x4, y1, y2, y3, y4;
         x1 = s1p1.getX();
         y1 = s1p1.getY();

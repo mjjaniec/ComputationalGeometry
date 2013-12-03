@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.concurrent.Semaphore;
 
 public class MainPanel extends JPanel {
     private List<Point> points;
-    private List<Rectangle> frames;
     private Semaphore semaphore;
     private MouseHandler mouseHandler;
     private Set<Drawable> objects;
@@ -20,7 +20,6 @@ public class MainPanel extends JPanel {
         objects = new HashSet<>();
         semaphore = new Semaphore(0);
         points = new ArrayList<>();
-        frames = new ArrayList<>();
         setPreferredSize(new Dimension(600, 400));
         mouseHandler = new MouseHandler(this);
         addMouseListener(mouseHandler);
@@ -31,22 +30,24 @@ public class MainPanel extends JPanel {
         return objects;
     }
 
-    public List<Rectangle> getFrames() {
-        return frames;
-    }
-
     public void clear() {
         points.clear();
         repaint();
     }
 
     public void refresh() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                repaint();
-            }
-        });
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    repaint();
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
 
@@ -69,16 +70,6 @@ public class MainPanel extends JPanel {
             p.draw(g);
         }
 
-        if(points.size() >= 2) {
-            Bisector bisector = new Bisector(points.get(0), points.get(1));
-            bisector.draw(g);
-        }
-
-        g.setColor(Color.LIGHT_GRAY);
-        for(Rectangle frame : frames) {
-            g.drawRect((int)frame.getX(), (int)frame.getY(), (int)frame.getWidth(), (int)frame.getHeight());
-        }
-
         for(Drawable drawable : objects) {
             drawable.draw(g);
         }
@@ -91,6 +82,7 @@ public class MainPanel extends JPanel {
     public void start() {
         removeMouseListener(mouseHandler);
         removeMouseMotionListener(mouseHandler);
+        semaphore.release(10);
 
         new Thread(new Solver(this)).start();
     }

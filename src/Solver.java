@@ -1,11 +1,9 @@
-import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
-public class Solver implements Runnable {
+public class Solver implements Runnable, Constants {
     private static final int FRAME_MARGIN = 5;
-    private static final Color SKYBLUE = new Color(20,120,255);
     private MainPanel mainPanel;
 
     public Solver(MainPanel mainPanel) {
@@ -18,55 +16,63 @@ public class Solver implements Runnable {
 
     @Override
     public void run() {
-        waitForNextStep();
+        if(mainPanel.getPoints().size() == 0) {
+            return;
+        }
+
         Collections.sort(mainPanel.getPoints());
         int i = 0;
         for (Point p : mainPanel.getPoints()) {
             p.setLabel(Integer.toString(i));
             ++i;
         }
+        mainPanel.refresh();
+        waitForNextStep();
         recursive(mainPanel.getPoints());
     }
 
     private Voronoi recursive(List<Point> points) {
+        for (Point p : mainPanel.getPoints()) {
+            p.setColor(Color.GRAY);
+        }
+        for (Point p: points) {
+            p.setColor(Color.BLUE);
+        }
+        mainPanel.refresh();
+        waitForNextStep();
         if(points.size() > 3) {
             int pivot = points.size() / 2;
             List<Point> left = points.subList(0,pivot);
             List<Point> right = points.subList(pivot, points.size());
-            Rectangle leftFrame = getFrame(left);
-            Rectangle rightFrame = getFrame(right);
 
-            mainPanel.getFrames().add(leftFrame);
             Voronoi leftVoronoi = recursive(left);
-            mainPanel.getFrames().remove(leftFrame);
-            mainPanel.getFrames().add(rightFrame);
             Voronoi rightVoronoi = recursive(right);
-            mainPanel.getFrames().remove(rightFrame);
+            for (Point point : rightVoronoi.getPoints()) {
+                point.setColor(Color.GRAY);
+            }
+            mainPanel.refresh();
+            waitForNextStep();
+            leftVoronoi.setColor(Color.GREEN);
+            rightVoronoi.setColor(SKYBLUE);
+            for (Point point : leftVoronoi.getPoints()) {
+                point.setColor(Color.GREEN);
+            }
+            for (Point point : rightVoronoi.getPoints()) {
+                point.setColor(SKYBLUE);
+            }
+            mainPanel.refresh();
+            waitForNextStep();
             return Voronoi.merge(leftVoronoi, rightVoronoi, mainPanel);
         } else {
             if(points.size() == 1) {
-                return new Voronoi(points.get(0));
+                Voronoi result = new Voronoi(points.get(0));
+                mainPanel.getObjects().add(result);
+                return result;
             } else {
-                return new Voronoi(points.get(0), points.get(1));
+                Voronoi result = new Voronoi(points.get(0), points.get(1));
+                mainPanel.getObjects().add(result);
+                return result;
             }
         }
     }
-
-
-
-    private Rectangle getFrame(List<Point> points) {
-        double xMin = Double.POSITIVE_INFINITY, yMin = Double.POSITIVE_INFINITY;
-        double xMax = Double.NEGATIVE_INFINITY, yMax = Double.NEGATIVE_INFINITY;
-
-        for (Point p : points) {
-            xMin = Math.min(xMin, p.getX());
-            yMin = Math.min(yMin, p.getY());
-            xMax = Math.max(xMax, p.getX());
-            yMax = Math.max(yMax, p.getY());
-        }
-
-        return new Rectangle((int)xMin - FRAME_MARGIN, (int)yMin - FRAME_MARGIN,
-                (int)(xMax - xMin + 2 * FRAME_MARGIN), (int)(yMax - yMin + 2 * FRAME_MARGIN));
-    }
-
 }

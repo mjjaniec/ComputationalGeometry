@@ -3,9 +3,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bisector implements Drawable, Constants {
-    private static final Color COLOR = new Color(20, 255, 120);
+    private static final Color COLOR = new Color(47, 255, 91);
     private Point a, b;
     private List<Point> chain;
+    private Color color;
 
     public Point getA() {
         return a;
@@ -118,7 +119,9 @@ public class Bisector implements Drawable, Constants {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(COLOR);
+        if(getColor() != null) {
+            g.setColor(getColor());
+        }
         for (int i = 1; i < chain.size(); ++i) {
             drawLine(g, chain.get(i - 1), chain.get(i));
         }
@@ -142,5 +145,13 @@ public class Bisector implements Drawable, Constants {
             }
         }
         return result;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

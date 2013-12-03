@@ -54,7 +54,7 @@ public class Point implements Comparable<Point> , Drawable{
         if (x != o.x) {
             return x < o.x ? -1 : 1;
         }
-        return y < o.y ? -1 : 1;
+        return y < o.y ? -1 : y == o.y ? 0 : 1;
     }
 
     @Override
@@ -96,6 +96,9 @@ public class Point implements Comparable<Point> , Drawable{
 
     @Override
     public String toString() {
-        return label;
+        if(label != null) {
+            return label;
+        }
+        return "[ " + getX() + ", " + getY() + " ]";
     }
 }
