@@ -79,6 +79,8 @@ public class Voronoi implements Constants, Drawable {
 
         bisector1.setColor(Color.GRAY);
         bisector2.setColor(Color.GRAY);
+        bisector1.clip(bounds);
+        bisector2.clip(bounds);
 
         if(bisector1.lower() == Bisector.Side.LEFT) {
             bounds = new Rectangle(
@@ -100,10 +102,25 @@ public class Voronoi implements Constants, Drawable {
         bounds = new Rectangle((int) BOUNDS.getX() - 1, (int) BOUNDS.getY(),
                 (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) clip.getY() + 1);
 
+
         bisector1.setColor(Color.RED);
         bisector2.setColor(Color.RED);
         bisector1.clip(bounds);
         bisector2.clip(bounds);
+
+        if(bisector1.lower() == Bisector.Side.RIGHT) {
+            bounds = new Rectangle(
+                    (int) BOUNDS.getX() - 1, (int) BOUNDS.getY() - 1,
+                    (int) (BOUNDS.getX() + clip.getX() + 2), (int) BOUNDS.getHeight() + 2);
+            bisector1.clip(bounds);
+            bisector2.clip(bounds);
+        } else if(bisector1.lower() == Bisector.Side.LEFT) {
+            bounds = new Rectangle(
+                    (int) (BOUNDS.getX() + clip.getX() - 1), (int) BOUNDS.getY() - 1,
+                    (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) BOUNDS.getHeight() + 2);
+            bisector1.clip(bounds);
+            bisector2.clip(bounds);
+        }
         leftCell.neighbours.put(rightCell.center, new Neighbour(rightCell, BOUNDS, bisector1));
         rightCell.neighbours.put(leftCell.center, new Neighbour(leftCell, BOUNDS, bisector2));
 
