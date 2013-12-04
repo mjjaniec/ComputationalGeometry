@@ -16,28 +16,28 @@ public class LimitingCircle implements Drawable, Constants {
         double dy = b.getY() - a.getY();
         if (Math.abs(dx) > Math.abs(dy)) {
             if (a.compareTo(b) < 0) {
-                return x.getY() > x.getX() + b.getY() - b.getX() && x.getY() > -x.getX() + a.getY() + a.getX();
+                return x.getY() >= x.getX() + b.getY() - b.getX() && x.getY() >= -x.getX() + a.getY() + a.getX();
             } else {
-                return x.getY() < x.getX() + b.getY() - b.getX() && x.getY() < -x.getX() + a.getY() + a.getX();
+                return x.getY() <= x.getX() + b.getY() - b.getX() && x.getY() <= -x.getX() + a.getY() + a.getX();
             }
         } else if (Math.abs(dy) > Math.abs(dx)) {
             if (a.getY() < b.getY()) {
-                return x.getY() > x.getX() + a.getY() - a.getX() && x.getY() < -x.getX() + b.getY() + b.getX();
+                return x.getY() >= x.getX() + a.getY() - a.getX() && x.getY() <= -x.getX() + b.getY() + b.getX();
             } else {
-                return x.getY() < x.getX() + a.getY() - a.getX() && x.getY() > -x.getX() + b.getY() + b.getX();
+                return x.getY() <= x.getX() + a.getY() - a.getX() && x.getY() >= -x.getX() + b.getY() + b.getX();
             }
         } else {
             if (dx > 0) {
                 if (dy > 0) {
-                    return x.getY() > x.getX() + a.getY() - a.getX();
+                    return x.getY() >= x.getX() + a.getY() - a.getX();
                 } else {
-                    return x.getY() > -x.getX() + a.getY() + a.getX();
+                    return x.getY() >= -x.getX() + a.getY() + a.getX();
                 }
             } else {
                 if (dy > 0) {
-                    return x.getY() < -x.getX() + a.getY() + a.getX();
+                    return x.getY() <= -x.getX() + a.getY() + a.getX();
                 } else {
-                    return x.getY() < x.getX() + a.getY() - a.getX();
+                    return x.getY() <= x.getX() + a.getY() - a.getX();
                 }
             }
         }

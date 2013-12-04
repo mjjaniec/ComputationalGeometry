@@ -85,7 +85,7 @@ public class MainPanel extends JPanel {
     public void start() {
         removeMouseListener(mouseHandler);
         removeMouseMotionListener(mouseHandler);
-        semaphore.release(24);
+        semaphore.release(0);
 
         new Thread(new Solver(this)).start();
     }

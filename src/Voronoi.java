@@ -56,7 +56,7 @@ public class Voronoi implements Constants, Drawable {
         return (first != null) &&
                 (
                         second == null ||
-                                first.getSecond().getY() <= second.getSecond().getY()
+                                first.getSecond().getY() >= second.getSecond().getY()
                 );
     }
 
@@ -154,7 +154,7 @@ public class Voronoi implements Constants, Drawable {
         mainPanel.refresh();
         mainPanel.waitForNextStep();
 
-        double last = Double.POSITIVE_INFINITY;
+        Point last = new Point(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         while (true) {
             Pair<Bisector, Point> leftIntersection = getLowermostIntersection(bisector1, bisector2, leftCell, last);
@@ -167,10 +167,11 @@ public class Voronoi implements Constants, Drawable {
             if (predicate(leftIntersection, rightIntersection)) {
                 any = true;
                 Point leftCenter = getNewCenter(leftCell, rightCell, leftIntersection);
+                last = leftIntersection.getSecond();
 
                 Rectangle bounds = new Rectangle(
                         (int) BOUNDS.getX() - 1, (int) BOUNDS.getY() - 1,
-                        (int) (BOUNDS.getX() + leftIntersection.getSecond().getX() + 2), (int) BOUNDS.getHeight() + 2);
+                        (int) (BOUNDS.getX() + last.getX() + 2), (int) BOUNDS.getHeight() + 2);
 
                 VoronoiCell newLeftCell = l.getCell(leftCenter);
                 leftCell.neighbours.get(leftCenter).bisector.clip(bounds);
@@ -190,9 +191,10 @@ public class Voronoi implements Constants, Drawable {
             if (predicate(rightIntersection, leftIntersection)) {
                 any = true;
                 Point rightCenter = getNewCenter(leftCell, rightCell, rightIntersection);
+                last = rightIntersection.getSecond();
 
                 Rectangle bounds = new Rectangle(
-                        (int) (BOUNDS.getX() + rightIntersection.getSecond().getX() - 1), (int) BOUNDS.getY() - 1,
+                        (int) (BOUNDS.getX() + last.getX() - 1), (int) BOUNDS.getY() - 1,
                         (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) BOUNDS.getHeight() + 2);
 
                 VoronoiCell newRightCell = r.getCell(rightCenter);
@@ -217,14 +219,6 @@ public class Voronoi implements Constants, Drawable {
             if (!any) {
                 break;
             }
-
-            if (leftIntersection != null) {
-                last = Math.min(last, leftIntersection.getSecond().getY());
-            }
-            if (rightIntersection != null) {
-                last = Math.min(last, rightIntersection.getSecond().getY());
-            }
-
         }
 
         bisector1.setColor(Color.GRAY);
@@ -269,18 +263,18 @@ public class Voronoi implements Constants, Drawable {
 
         p = extractPoint(l, bisector);
         while (l.convexHull.get(lIndex) != p) {
-            lIndex = prev(lIndex, lSize);
+            lIndex = next(lIndex, lSize);
         }
         p = extractPoint(l, first);
         while (l.convexHull.get(lIndex) != p) {
             result.convexHull.add(l.convexHull.get(lIndex));
-            lIndex = prev(lIndex, lSize);
+            lIndex = next(lIndex, lSize);
         }
         result.convexHull.add(p);
     }
 
     private static Pair<Bisector, Point> getLowermostIntersection(
-            Bisector bisector1, Bisector bisector2, VoronoiCell cell, double last) {
+            Bisector bisector1, Bisector bisector2, VoronoiCell cell, Point last) {
         Pair<Bisector, Point> result = new Pair<>(null, null);
         for (Neighbour n : cell.neighbours.values()) {
 
@@ -288,10 +282,15 @@ public class Voronoi implements Constants, Drawable {
             if (n.bisector == bisector1 || n.bisector == bisector2) {
                 continue;
             }
+            if(n.cell.center.getY() > cell.center.getY()) {
+                continue;
+            }
+
             intersections.addAll(bisector1.intersections(n.bisector));
             intersections.addAll(bisector2.intersections(n.bisector));
             for (Point p : intersections) {
-                if (p.getY() < last && (result.getSecond() == null || result.getSecond().getY() > p.getY())) {
+                if ( ((p.getY() < last.getY()) || (bisector1.getA().getX() == bisector1.getB().getX() && p.getX() != last.getX()) )
+                        && (result.getSecond() == null || result.getSecond().getY() > p.getY())) {
                     result = Pair.of(n.bisector, p);
                 }
             }
@@ -335,19 +334,21 @@ public class Voronoi implements Constants, Drawable {
             }
 
             if (!isLeftOK) {
-                if (lSize == 1 || !lc.contains(lHull.get(prev(lIndex, lSize)))) {
+                if (lSize == 1 || !lc.contains(lHull.get(next(lIndex, lSize)))) {
                     isLeftOK = true;
                 } else {
                     change = true;
-                    lIndex = prev(lIndex, lSize);
+                    lHull.get(lIndex).setColor(Color.GREEN);
+                    lIndex = next(lIndex, lSize);
                     isRightOK = false;
                 }
             } else if (!isRightOK) {
-                if (rSize == 1 || !lc.contains(rHull.get(next(rIndex, rSize)))) {
+                if (rSize == 1 || !lc.contains(rHull.get(prev(rIndex, rSize)))) {
                     isRightOK = true;
                 } else {
                     change = true;
-                    rIndex = next(rIndex, rSize);
+                    rHull.get(rIndex).setColor(SKYBLUE);
+                    rIndex = prev(rIndex, rSize);
                     isLeftOK = false;
                 }
             }
