@@ -40,7 +40,7 @@ public class Solver implements Runnable, Constants {
         }
         mainPanel.refresh();
         waitForNextStep();
-        if(points.size() > 3) {
+        if(points.size() > 2) {
             int pivot = points.size() / 2;
             List<Point> left = points.subList(0,pivot);
             List<Point> right = points.subList(pivot, points.size());
@@ -50,6 +50,11 @@ public class Solver implements Runnable, Constants {
             for (Point point : rightVoronoi.getPoints()) {
                 point.setColor(Color.GRAY);
             }
+            for (Point point : leftVoronoi.getPoints()) {
+                point.setColor(Color.GRAY);
+            }
+            leftVoronoi.setColor(Color.GRAY);
+            rightVoronoi.setColor(Color.GRAY);
             mainPanel.refresh();
             waitForNextStep();
             leftVoronoi.setColor(Color.GREEN);
@@ -62,14 +67,26 @@ public class Solver implements Runnable, Constants {
             }
             mainPanel.refresh();
             waitForNextStep();
-            return Voronoi.merge(leftVoronoi, rightVoronoi, mainPanel);
+            Voronoi result = Voronoi.merge(leftVoronoi, rightVoronoi, mainPanel);
+            result.setColor(Color.GRAY);
+            mainPanel.getObjects().remove(leftVoronoi);
+            mainPanel.getObjects().remove(rightVoronoi);
+            mainPanel.getObjects().add(result);
+            for(Point p : result.getPoints()) {
+                p.setColor(Color.GRAY);
+            }
+            mainPanel.refresh();
+            mainPanel.waitForNextStep();
+            return result;
         } else {
             if(points.size() == 1) {
                 Voronoi result = new Voronoi(points.get(0));
+                result.setColor(Color.GRAY);
                 mainPanel.getObjects().add(result);
                 return result;
             } else {
                 Voronoi result = new Voronoi(points.get(0), points.get(1));
+                result.setColor(Color.GRAY);
                 mainPanel.getObjects().add(result);
                 return result;
             }

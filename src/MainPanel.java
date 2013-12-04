@@ -66,6 +66,9 @@ public class MainPanel extends JPanel {
         ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         super.paintComponent(g);
 
+        g.setColor(Color.WHITE);
+        g.fillRect(0,0,getWidth(),getHeight());
+
         for (Point p : points) {
             p.draw(g);
         }
@@ -82,7 +85,7 @@ public class MainPanel extends JPanel {
     public void start() {
         removeMouseListener(mouseHandler);
         removeMouseMotionListener(mouseHandler);
-        semaphore.release(10);
+        semaphore.release(8);
 
         new Thread(new Solver(this)).start();
     }

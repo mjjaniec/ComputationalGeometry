@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utils {
 
@@ -50,7 +52,30 @@ public class Utils {
         }
 
         y = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4);
+        y /= denominator;
 
-        return  new Point(x, y / denominator);
+        if( !between(y, y1, y2) || ! between(y, y3, y4)) {
+            return null;
+        }
+
+        return  new Point(x, y);
+    }
+
+    private static boolean between(double y, double y1, double y2) {
+        if(y1 < y2){
+            return y1 <= y && y <= y2;
+        } else {
+            return y2 <= y && y <= y1;
+        }
+    }
+
+    public static <T> List<T> notNullList(T ... objects) {
+        List<T> result = new ArrayList<T>();
+        for(T object : objects) {
+            if(object != null) {
+                result.add(object);
+            }
+        }
+        return result;
     }
 }
