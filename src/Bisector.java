@@ -117,32 +117,32 @@ public class Bisector implements Drawable, Constants {
     }
 
     public Side lower() {
-        if(fst().getY() > lst().getY() && fst().getX() < lst().getX()) {
+        if (fst().getY() > lst().getY() && fst().getX() < lst().getX()) {
             return Side.LEFT;
         }
-        if(fst().getY() > lst().getY() && fst().getX() > lst().getX()) {
+        if (fst().getY() > lst().getY() && fst().getX() > lst().getX()) {
             return Side.RIGHT;
         }
-        if(fst().getY() < lst().getY() && fst().getX() < lst().getX()) {
+        if (fst().getY() < lst().getY() && fst().getX() < lst().getX()) {
             return Side.RIGHT;
         }
-        if(fst().getY() < lst().getY() && fst().getX() > lst().getX()) {
+        if (fst().getY() < lst().getY() && fst().getX() > lst().getX()) {
             return Side.LEFT;
         }
         return Side.NONE;
     }
 
     public Side lefter() {
-        if(fst().getY() > lst().getY() && fst().getX() < lst().getX()) {
+        if (fst().getY() > lst().getY() && fst().getX() < lst().getX()) {
             return Side.BOTTOM;
         }
-        if(fst().getY() > lst().getY() && fst().getX() > lst().getX()) {
+        if (fst().getY() > lst().getY() && fst().getX() > lst().getX()) {
             return Side.TOP;
         }
-        if(fst().getY() < lst().getY() && fst().getX() < lst().getX()) {
+        if (fst().getY() < lst().getY() && fst().getX() < lst().getX()) {
             return Side.TOP;
         }
-        if(fst().getY() < lst().getY() && fst().getX() > lst().getX()) {
+        if (fst().getY() < lst().getY() && fst().getX() > lst().getX()) {
             return Side.BOTTOM;
         }
         return Side.NONE;
@@ -205,6 +205,9 @@ public class Bisector implements Drawable, Constants {
             }
 
             if (inter.size() == 1) {
+                if (r.contains((int) prev.getX(), (int) prev.getY())) {
+                    started = true;
+                }
                 if (!started) {
                     started = true;
                     Point i = inter.get(0);
@@ -246,9 +249,5 @@ public class Bisector implements Drawable, Constants {
 
     public void setColor(Color color) {
         this.color = color;
-    }
-
-    public enum Side {
-        NONE, TOP, BOTTOM, LEFT, RIGHT;
     }
 }

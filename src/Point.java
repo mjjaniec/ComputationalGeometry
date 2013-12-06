@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Point implements Comparable<Point> , Drawable{
+public class Point implements Comparable<Point>, Drawable {
     private static final int RADIUS = 3;
     private double x, y;
     private Color color;
@@ -96,7 +96,7 @@ public class Point implements Comparable<Point> , Drawable{
 
     @Override
     public String toString() {
-        if(label != null) {
+        if (label != null) {
             return label;
         }
         return "[ " + getX() + ", " + getY() + " ]";

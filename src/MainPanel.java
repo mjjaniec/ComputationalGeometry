@@ -18,7 +18,7 @@ public class MainPanel extends JPanel {
 
     public MainPanel() {
         objects = new HashSet<>();
-        semaphore = new Semaphore(0);
+        semaphore = new Semaphore(8);
         points = new ArrayList<>();
         setPreferredSize(new Dimension(600, 400));
         mouseHandler = new MouseHandler(this);
@@ -26,12 +26,15 @@ public class MainPanel extends JPanel {
         addMouseMotionListener(mouseHandler);
     }
 
-    public Set<Drawable> getObjects() {
-        return objects;
-    }
-
     public void clear() {
+        semaphore.release(1000);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         points.clear();
+        objects.clear();
         repaint();
     }
 
@@ -53,8 +56,14 @@ public class MainPanel extends JPanel {
 
     public void load() {
         points.clear();
-        int[] x = new int[]{50, 100, 200, 200, 200, 300, 300, 400, 550};
-        int[] y = new int[]{200, 350, 50, 200, 300, 100, 200, 50, 200};
+        int[] x, y;
+//        x = new int[]{50, 100, 200, 200, 200, 300, 300, 400, 550};
+//        y = new int[]{200, 350, 50, 200, 300, 100, 200, 50, 200};
+//        x = new int[]{100, 200, 100};
+//        y = new int[]{100, 100, 200};
+
+        x = new int[]{300, 200, 500, 500, 300, 200};
+        y = new int[]{100, 350, 100, 300, 200, 160};
         for (int i = 0; i < x.length; ++i) {
             points.add(new Point(x[i], y[i]));
         }
@@ -67,13 +76,13 @@ public class MainPanel extends JPanel {
         super.paintComponent(g);
 
         g.setColor(Color.WHITE);
-        g.fillRect(0,0,getWidth(),getHeight());
+        g.fillRect(0, 0, getWidth(), getHeight());
 
         for (Point p : points) {
             p.draw(g);
         }
 
-        for(Drawable drawable : objects) {
+        for (Drawable drawable : objects) {
             drawable.draw(g);
         }
     }
@@ -85,9 +94,32 @@ public class MainPanel extends JPanel {
     public void start() {
         removeMouseListener(mouseHandler);
         removeMouseMotionListener(mouseHandler);
-        semaphore.release(0);
+        semaphore.release(15);
 
-        new Thread(new Solver(this)).start();
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                GraphicsViewDelegate delegate = new GraphicsViewDelegate() {
+                    @Override
+                    public Set<Drawable> getObjects() {
+                        return objects;
+                    }
+
+                    @Override
+                    public void refresh() {
+                        MainPanel.this.refresh();
+                    }
+
+                    @Override
+                    public void waitForNextStep() {
+                        MainPanel.this.waitForNextStep();
+                    }
+                };
+                Voronoi.compute(points, delegate);
+                refresh();
+            }
+        }).start();
     }
 
     public void step() {
