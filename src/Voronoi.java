@@ -124,8 +124,10 @@ public class Voronoi implements Constants, Drawable {
         Point last = new Point(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         while (true) {
-            Pair<Bisector, Point> leftIntersection = getLowermostIntersection(bisector1, bisector2, leftCell, last);
-            Pair<Bisector, Point> rightIntersection = getLowermostIntersection(bisector1, bisector2, rightCell, last);
+            Pair<Bisector, Point> leftIntersection =
+                    getLowermostIntersection(bisector1, bisector2, leftCell, last, Side.LEFT);
+            Pair<Bisector, Point> rightIntersection =
+                    getLowermostIntersection(bisector1, bisector2, rightCell, last, Side.RIGHT);
             boolean any = false;
 
             if (leftIntersection == null && rightIntersection == null) {
@@ -245,11 +247,11 @@ public class Voronoi implements Constants, Drawable {
         } else if (side == Side.RIGHT) {
             bounds = new Rectangle(
                     (int) BOUNDS.getX() - 1, (int) BOUNDS.getY() - 1,
-                    (int) (BOUNDS.getX() + clip.getX() + 2), (int) BOUNDS.getHeight() + 2);
+                    (int) (BOUNDS.getX() + clip.getX() + 2), (int) (BOUNDS.getY() + BOUNDS.getHeight() + 2));
         } else if (side == Side.LEFT) {
             bounds = new Rectangle(
                     (int) (BOUNDS.getX() + clip.getX() - 1), (int) BOUNDS.getY() - 1,
-                    (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) BOUNDS.getHeight() + 2);
+                    (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) (BOUNDS.getY() + BOUNDS.getHeight() + 2));
         }
         bisector1.clip(bounds);
         bisector2.clip(bounds);
@@ -290,8 +292,9 @@ public class Voronoi implements Constants, Drawable {
     }
 
     private static Pair<Bisector, Point> getLowermostIntersection(
-            Bisector bisector1, Bisector bisector2, VoronoiCell cell, Point last) {
+            Bisector bisector1, Bisector bisector2, VoronoiCell cell, Point last, Side side) {
         Pair<Bisector, Point> result = new Pair<>(null, null);
+        Point resultNeighborCenter = null;
         for (Neighbour n : cell.neighbours.values()) {
 
             List<Point> intersections = new ArrayList<>();
@@ -308,6 +311,14 @@ public class Voronoi implements Constants, Drawable {
                 if (((p.getY() < last.getY()) || (bisector1.getA().getX() == bisector1.getB().getX() && p.getX() != last.getX()))
                         && (result.getSecond() == null || result.getSecond().getY() > p.getY())) {
                     result = Pair.of(n.bisector, p);
+                    resultNeighborCenter = n.cell.center;
+                }
+                if (result.getSecond() != null && p.getY() == result.getSecond().getY() &&
+                        ((side == Side.LEFT && n.cell.center.getX() > resultNeighborCenter.getX())
+                                ||
+                                ((side == Side.RIGHT && n.cell.center.getY() < resultNeighborCenter.getX())))) {
+                    result = Pair.of(n.bisector, p);
+                    resultNeighborCenter = n.cell.center;
                 }
             }
         }
