@@ -158,7 +158,7 @@ public class Voronoi implements Constants, Drawable {
                 }
 
                 Pair<Bisector, Bisector> pair = handleBisectors(
-                        bisector1, bisector2, leftIntersection.getSecond(), leftCell, rightCell, side, Side.RIGHT);
+                        bisector1, bisector2, leftIntersection.getSecond(), leftCell, rightCell, side, Side.LEFT);
                 bisector1 = pair.getFirst();
                 bisector2 = pair.getSecond();
 
@@ -190,7 +190,7 @@ public class Voronoi implements Constants, Drawable {
                     side = bisector1.lower().invert();
                 }
                 Pair<Bisector, Bisector> pair = handleBisectors(
-                        bisector1, bisector2, rightIntersection.getSecond(), leftCell, rightCell, side, Side.LEFT);
+                        bisector1, bisector2, rightIntersection.getSecond(), leftCell, rightCell, side, Side.RIGHT);
                 bisector1 = pair.getFirst();
                 bisector2 = pair.getSecond();
 
@@ -241,7 +241,7 @@ public class Voronoi implements Constants, Drawable {
                     (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) (BOUNDS.getY() + BOUNDS.getHeight() + 2));
         } else if (side == Side.BOTTOM) {
             bounds = new Rectangle((int) BOUNDS.getX() - 1, (int) BOUNDS.getY() - 1,
-                    (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) clip.getY() + 1);
+                    (int) (BOUNDS.getX() + BOUNDS.getWidth() + 2), (int) clip.getY() + 2);
         } else if (side == Side.RIGHT) {
             bounds = new Rectangle(
                     (int) BOUNDS.getX() - 1, (int) BOUNDS.getY() - 1,

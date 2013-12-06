@@ -47,9 +47,9 @@ public class MainPanel extends JPanel {
                 }
             });
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -57,13 +57,13 @@ public class MainPanel extends JPanel {
     public void load() {
         points.clear();
         int[] x, y;
-//        x = new int[]{50, 100, 200, 200, 200, 300, 300, 400, 550};
-//        y = new int[]{200, 350, 50, 200, 300, 100, 200, 50, 200};
+        x = new int[]{50, 100, 200, 200, 200, 300, 300, 400, 550};
+        y = new int[]{200, 350, 50, 200, 300, 100, 200, 50, 200};
 //        x = new int[]{100, 200, 100};
 //        y = new int[]{100, 100, 200};
 
-        x = new int[]{300, 200, 500, 500, 300, 200};
-        y = new int[]{100, 350, 100, 300, 200, 160};
+//        x = new int[]{300, 200, 500, 500, 300, 200};
+//        y = new int[]{100, 350, 100, 300, 200, 160};
         for (int i = 0; i < x.length; ++i) {
             points.add(new Point(x[i], y[i]));
         }
